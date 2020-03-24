@@ -12,9 +12,12 @@
         </ul>
     </div>
     <div>
-        <h1>Order Summary</h1>
-        <table>           
+        <h1><u>Order Summary</u></h1>
+        <br />
+        <p><button class="clearall">Clear All</button></p>
+        <table id="list">
         </table>
+        <div class="mesg alert alert-success"></div>
     </div>
 </body>
 </html>
@@ -36,6 +39,8 @@
         }];
     var num = 0;
 
+    let cart = [];
+
     Object.keys(products).forEach(function (obj) {
         product = `<li>\<h2 class="Product">${products[num].productname}</h2>
                    <p class="price">RM ${products[num].unitprice.toFixed(2)}</p>
@@ -43,34 +48,68 @@
         $("ul").append(product);
         num++;
     })
+
     var quantity = 1;
+
     $(".addcart").click(function (btn) {
         var value = btn.target.value;
 
-
         var getProductDetails = products.find(item => item.id == value);
 
-        
         //alert(getProductDetails.productname);
-        
-        productDetail = `<tr><td>${getProductDetails.productname} RM${getProductDetails.unitprice.toFixed(2)} 
-                         <p><button class="addQty">+</button><p class="quantity">1</p><button class="deductQty">-</button ></p >
+
+        productDetail = `<tr><td>${getProductDetails.productname} RM${getProductDetails.unitprice.toFixed(2)}
+                         <p><button class="addQty" value="${getProductDetails.id}">+</button><p id="${getProductDetails.id}">1</p>
+                         <button class="deductQty" value="${getProductDetails.id}">-</button></p>
+                         <button class="delete" value="${getProductDetails.id}">X</button>
                          </td></tr>`
         $("table").append(productDetail);
 
+        cart.push({ id: getProductDetails.id, productname: getProductDetails.productname, unitprice: getProductDetails.unitprice, quantity: 1 })
+
+
         $(".addQty").click(function (Qty) {
-            alert("add quantity clicked ")
-            debugger;
-            Qty = parseInt(quantity + 1);
-            
+
+            if (getProductDetails.id == Qty.target.value) {
+                debugger;
+
+                var item = cart.find(prod => prod.id == Qty.target.value);
+
+                item.quantity++;
+
+                $(`${"#" + Qty.target.value}`).html(item.quantity);
+            }
         })
 
         $(".deductQty").click(function (Qty) {
-            alert("deduct quantity clicked ")
+
+            if (getProductDetails.id == Qty.target.value) {
+
+                debugger;
+
+                var item = cart.find(prod => prod.id == Qty.target.value);
+
+                item.quantity--;
+
+                $(`${"#" + Qty.target.value}`).html(item.quantity);
+            }
+        })
+
+        $(".delete").click(function () {
+            $(this).parent().remove();
+        })
+
+        $(".clearall").click(function () {
             debugger;
-            Qty = quantity - 1;
-            quantity = Qty;
+            if ($("#list").children().length > 0) {
+                $("#list").empty();
+                $('.mesg').text("All items deleted.").fadeOut(2000);
+            }
+            else {
+                 $('.mesg').text("No item to delete.").fadeOut(2000);
+            }
             
         })
+
     })
 </script>
