@@ -99,7 +99,6 @@
     <Content Include="Image\mskeyboard.jpg" />
     <Content Include="Image\msmouse.jpg" />
     <Content Include="Interface.html" />
-    <Content Include="JavaScript.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

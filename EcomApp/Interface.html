@@ -2,6 +2,7 @@
 <html>
 <head>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <meta charset="utf-8" />
     <title></title>
 </head>
@@ -10,12 +11,15 @@
         <ul>
         </ul>
     </div>
+    <div>
+        <h1>Order Summary</h1>
+        <table>           
+        </table>
+    </div>
 </body>
 </html>
 
 <script>
-    debugger
-
     let products = [
         {
             id: 1, productname: "Logitech Mouse", unitprice: 35
@@ -32,19 +36,41 @@
         }];
     var num = 0;
 
-    Object.keys(products).forEach(function () {
-        debugger;
+    Object.keys(products).forEach(function (obj) {
         product = `<li>\<h2 class="Product">${products[num].productname}</h2>
                    <p class="price">RM ${products[num].unitprice.toFixed(2)}</p>
-                   <p><button class="Button" value=${products[num].productname}>Add to cart</button></p></li>`;
+                   <p><button class="addcart" value=${products[obj].id}>Add to cart</button></p></li>`;
         $("ul").append(product);
         num++;
     })
-
-    $(".Button").click(function (btn) {
+    var quantity = 1;
+    $(".addcart").click(function (btn) {
         var value = btn.target.value;
-        alert(value);
+
+
+        var getProductDetails = products.find(item => item.id == value);
 
         
+        //alert(getProductDetails.productname);
+        
+        productDetail = `<tr><td>${getProductDetails.productname} RM${getProductDetails.unitprice.toFixed(2)} 
+                         <p><button class="addQty">+</button><p class="quantity">1</p><button class="deductQty">-</button ></p >
+                         </td></tr>`
+        $("table").append(productDetail);
+
+        $(".addQty").click(function (Qty) {
+            alert("add quantity clicked ")
+            debugger;
+            Qty = parseInt(quantity + 1);
+            
+        })
+
+        $(".deductQty").click(function (Qty) {
+            alert("deduct quantity clicked ")
+            debugger;
+            Qty = quantity - 1;
+            quantity = Qty;
+            
+        })
     })
 </script>
