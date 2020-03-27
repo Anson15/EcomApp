@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title></title>
     <style>
-
+        
         
         li {
             border: 5px solid;
@@ -50,8 +50,8 @@
             width:50px;
         }
 
-        .addcart, .checkout,.clearall {
-            background-color: #4CAF50;
+        .clearall {
+            background-color: #FFA500;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -62,7 +62,8 @@
             margin: 4px 2px;
             cursor: pointer;
         }
-        .addQty {
+
+        .addcart, .checkout,.addQty {
             background-color: #4CAF50;
             border: none;
             color: white;
@@ -105,6 +106,7 @@
     </style>
 </head>
 <body>
+    
     <div class="flex-container">
         <div class="container">
             <ul>
@@ -175,24 +177,24 @@
 
             $("#list").append(productDetail);
 
+            //push the item to the cart
             cart.push({ id: getProductDetails[0].id, productname: getProductDetails[0].productname, unitprice: getProductDetails[0].unitprice, quantity: 1 })
 
             plus();
 
             minus();
-           
 
             $(".delete").click(function (obj) {
 
                 if (getProductDetails[0].id == obj.target.value) {
 
+                    //This is to remove the item from list
                     $(this).parent().remove();
 
-                    //loop the array and compare id if the id is same with the product id whisch is selected it will remove it
-                    debugger
+                    //loop the array and compare id if the id is same with the product id which is selected it will remove it
 
                     var getProduct = cart.map(function (x) { return x.id }).indexOf(getProductDetails[0].id);
-
+                    //the splice(item,1) is to remove the item 1 time
                     cart.splice(getProduct, 1);
 
                     console.log(cart.length);
@@ -203,7 +205,7 @@
 
         else {
 
-            debugger
+            //This condition is to make sure if the Item is exist in the cart,then i click add to cart it will only update the quantity only
 
             findProductInCart.quantity++;
 
@@ -212,15 +214,12 @@
 
 
         $(".clearall").click(function () {
-            debugger;
 
-            if ($("#list").children().length > 0) {
-
+            //this is to empty the cart
+            
                 $("#list").empty();
 
                 cart.length = 0;
-
-            }
         })
 
     })
@@ -229,7 +228,7 @@
     const plus = () => {
 
         $(".addQty").click(function (Qty) {
-
+            
             var findProductInCart = cart.find(item => item.id == Qty.target.value);
 
             if (findProductInCart.id == Qty.target.value) {
@@ -256,7 +255,7 @@
                 debugger;
 
                 var item = cart.find(prod => prod.id == Qty.target.value);
-
+                //This condition is to make sure the quantity cannot less then 1
                 if (item.quantity <= 1) {
 
                     item.quantity = 1;
@@ -278,6 +277,7 @@
         var Total = 0;
         var shippingFees = 10;
         var subTotal = 0;
+        //this function is to add the total price from the cart
         Object.keys(cart).forEach(function () {
             grandtotal = parseInt(cart[obj].unitprice * cart[obj].quantity);
             item = cart[obj].quantity;
@@ -290,7 +290,7 @@
         if (Total == 10) {
             alert("No item in cart");
         }
-        $("#Summary").append(`<tr><td><p> Item : ${subitem} items</p><p>Shipping Fees:RM ${shippingFees}</p><p>Total :RM ${Total}</p></td><tr>`);
+        $("#Summary").append(`<tr><td><p> SubTotal(${subitem} Item): ${subTotal}</p><p>Shipping Fees:RM ${shippingFees}</p><p>Total :RM ${Total}</p></td><tr>`);
         $("#list").empty();
         cart.length = 0;
 
