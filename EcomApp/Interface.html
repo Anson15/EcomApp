@@ -5,27 +5,129 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <meta charset="utf-8" />
     <title></title>
+    <style>
+
+        
+        li {
+            border: 5px solid;
+            margin-bottom: 40px;
+        }
+        ul:before, ul:after {
+            text-align: center;
+            display: block;
+            border: 5px solid black;
+            border-bottom: 0;
+            width: 48%;
+        }
+
+        li {
+            text-align: center;
+            width: 48%;
+            float: left;
+            border: 1px solid black;
+            margin-bottom: -1px;
+        }
+
+        .container {
+            grid-template-columns: 100px 50px 100px;
+            grid-template-rows: 80px auto 80px;
+            grid-column-gap: 10px;
+            grid-row-gap: 15px;
+        }
+        .container ul {
+            list-style-type: none;
+            
+            border-width: medium;
+        }
+        table {
+            border-collapse: separate;
+            border-spacing: 1px;
+            color: #4a4a4d;
+            font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        img{
+            height:50px;
+            width:50px;
+        }
+
+        .addcart, .checkout,.clearall {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .addQty {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        .deductQty, .delete {
+            background-color: #ff0000;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+
+        #Summary {
+            padding-right: 20px;
+        }
+
+        .checkout {
+            margin-right:30px;
+            padding-bottom: 20px;
+        }
+
+        @media screen and (max-width:1250px) {
+            .container ul li {
+                width: 200px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <ul>
-        </ul>
+    <div class="flex-container">
+        <div class="container">
+            <ul>
+            </ul>
+        </div>
     </div>
+    <table id="list">
+    </table>
+    <button class="clearall">Clear all</button>
+    <p class="mesg"></p>
     <div>
-        <h1><u>Order Summary</u></h1>
-        <br />
-        <p><button class="clearall">Clear All</button></p>
-        <table id="list">
-        </table>
-        <div class="mesg alert alert-success"></div>
+
+        <button class="checkout">Checkout</button>
     </div>
+
+    <div id="Summary"></div>
 </body>
 </html>
 
 <script>
     let products = [
         {
-            id: 1, productname: "Logitech Mouse", unitprice: 35
+            id: 1, productname: "Logitech Mouse", unitprice: 35,
         }, {
             id: 2, productname: "Logitech Keyboard", unitprice: 75
         }, {
@@ -39,8 +141,8 @@
         }];
     var num = 0;
 
-    let cart = [];
-
+    var cart = [];
+    //Print out all the item inside the product array
     Object.keys(products).forEach(function (obj) {
         product = `<li>\<h2 class="Product">${products[num].productname}</h2>
                    <p class="price">RM ${products[num].unitprice.toFixed(2)}</p>
@@ -49,67 +151,150 @@
         num++;
     })
 
-    var quantity = 1;
+
 
     $(".addcart").click(function (btn) {
+        debugger
         var value = btn.target.value;
 
-        var getProductDetails = products.find(item => item.id == value);
+        var getProductDetails = products.filter(function (obj) {
+            return obj.id == value;
+        });
 
-        //alert(getProductDetails.productname);
+        var findProductInCart = cart.find(item => item.id == value);
 
-        productDetail = `<tr><td>${getProductDetails.productname} RM${getProductDetails.unitprice.toFixed(2)}
-                         <p><button class="addQty" value="${getProductDetails.id}">+</button><p id="${getProductDetails.id}">1</p>
-                         <button class="deductQty" value="${getProductDetails.id}">-</button></p>
-                         <button class="delete" value="${getProductDetails.id}">X</button>
+        if (findProductInCart == null) {
+
+            productDetail = `<tr><td><p>${getProductDetails[0].productname} RM${getProductDetails[0].unitprice.toFixed(2)}
+                             <p><button class="addQty" value="${getProductDetails[0].id}">+</button><p id="${getProductDetails[0].id}">1</p>
+                             <button class="deductQty" value="${getProductDetails[0].id}">-</button></p>
+                             <button class="delete" value="${getProductDetails[0].id}">X</button>
                          </td></tr>`
-        $("table").append(productDetail);
 
-        cart.push({ id: getProductDetails.id, productname: getProductDetails.productname, unitprice: getProductDetails.unitprice, quantity: 1 })
+            $("#Summary").html("");
 
+            $("#list").append(productDetail);
 
-        $(".addQty").click(function (Qty) {
+            cart.push({ id: getProductDetails[0].id, productname: getProductDetails[0].productname, unitprice: getProductDetails[0].unitprice, quantity: 1 })
 
-            if (getProductDetails.id == Qty.target.value) {
-                debugger;
+            plus();
 
-                var item = cart.find(prod => prod.id == Qty.target.value);
+            minus();
+           
 
-                item.quantity++;
+            $(".delete").click(function (obj) {
 
-                $(`${"#" + Qty.target.value}`).html(item.quantity);
-            }
-        })
+                if (getProductDetails[0].id == obj.target.value) {
 
-        $(".deductQty").click(function (Qty) {
+                    $(this).parent().remove();
 
-            if (getProductDetails.id == Qty.target.value) {
+                    //loop the array and compare id if the id is same with the product id whisch is selected it will remove it
+                    debugger
 
-                debugger;
+                    var getProduct = cart.map(function (x) { return x.id }).indexOf(getProductDetails[0].id);
 
-                var item = cart.find(prod => prod.id == Qty.target.value);
+                    cart.splice(getProduct, 1);
 
-                item.quantity--;
+                    console.log(cart.length);
+                }
 
-                $(`${"#" + Qty.target.value}`).html(item.quantity);
-            }
-        })
+            })
+        }
 
-        $(".delete").click(function () {
-            $(this).parent().remove();
-        })
+        else {
+
+            debugger
+
+            findProductInCart.quantity++;
+
+            $(`${"#" + findProductInCart.id}`).html(findProductInCart.quantity);
+        }
+
 
         $(".clearall").click(function () {
             debugger;
+
             if ($("#list").children().length > 0) {
+
                 $("#list").empty();
-                $('.mesg').text("All items deleted.").fadeOut(2000);
+
+                cart.length = 0;
+
             }
-            else {
-                 $('.mesg').text("No item to delete.").fadeOut(2000);
-            }
-            
         })
 
     })
+
+
+    const plus = () => {
+
+        $(".addQty").click(function (Qty) {
+
+            var findProductInCart = cart.find(item => item.id == Qty.target.value);
+
+            if (findProductInCart.id == Qty.target.value) {
+                debugger;
+
+                var item = cart.find(prod => prod.id == Qty.target.value);
+
+                item.quantity += 1;
+
+                $(`${"#" + Qty.target.value}`).html(item.quantity);
+
+            }
+        })
+    }
+
+    const minus = () => {
+
+        $(".deductQty").click(function (Qty) {
+
+            var findProductInCart = cart.find(item => item.id == Qty.target.value);
+
+            if (findProductInCart.id == Qty.target.value) {
+
+                debugger;
+
+                var item = cart.find(prod => prod.id == Qty.target.value);
+
+                if (item.quantity <= 1) {
+
+                    item.quantity = 1;
+                }
+                else {
+                    item.quantity -= 1;
+                }
+
+                $(`${"#" + Qty.target.value}`).html(item.quantity);
+            }
+        })
+    }
+
+    $(".checkout").click(function () {
+        var obj = 0;
+        var item = 0;
+        var subitem = 0;
+        var grandtotal = 0;
+        var Total = 0;
+        var shippingFees = 10;
+        var subTotal = 0;
+        Object.keys(cart).forEach(function () {
+            grandtotal = parseInt(cart[obj].unitprice * cart[obj].quantity);
+            item = cart[obj].quantity;
+            obj++;
+            subTotal += grandtotal;
+            subitem += item;
+
+        })
+        Total = parseInt(subTotal + shippingFees);
+        if (Total == 10) {
+            alert("No item in cart");
+        }
+        $("#Summary").append(`<tr><td><p> Item : ${subitem} items</p><p>Shipping Fees:RM ${shippingFees}</p><p>Total :RM ${Total}</p></td><tr>`);
+        $("#list").empty();
+        cart.length = 0;
+
+    })
+
+
 </script>
